@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="main-container">
+      <section id="todo-header">
+        <input id="todo-input" type="text" />
+        <button id="add-todo-btn">Add todo</button>
+        <button onclick="showCompleted()">show completed todos</button>
+      </section>
+      <section id="todo-footer">
+        <button id="todo-filter-btn">filter</button>
+      </section>
+      <section id="completed-todos"></section>
+      <section id="todo-body"></section>
+    </div>
+  </body>
+  <script>
+    const todoInput = document.getElementById("todo-input");
+    const addTodoBtn = document.getElementById("add-todo-btn");
+    const todoBody = document.getElementById("todo-body");
+    const todoFooter = document.getElementById("todo-footer");
+    const todoFilter = document.getElementById("todo-filter-btn");
+    const completedTodos = document.getElementById("completed-todos");
+
+    const todos = [];
+
+    //    function addTodo(){
+    //      console.log(todoInput)
+    //    }
+
+    //    const addTodo =() => {
+    //     console.log(todoInput)
+    //    }
+
+    function updateStatus(id) {
+      let target = todos.filter((todo) => todo.id == id);
+      let targetIndex = todos.findIndex((obj) => obj.id == target[0].id);
+      target[0].isComplete = true;
+      if (targetIndex !== -1) {
+        todos[targetIndex] = target[0];
+      }
+    }
+
+    function showCompleted() {
+      todos.forEach((todo) => {
+        if (todo.isComplete) {
+          const p = document.createElement("p");
+          p.textContent = todo.todo;
+          completedTodos.appendChild(p);
+        }
+      });
+    }
+
+    addTodoBtn.addEventListener("click", function () {
+      const todoText = todoInput.value;
+      const id = Math.random() + Date.now();
+      const todo = {
+        id: id,
+        todo: todoText,
+        isComplete: false,
+        createdAt: Date.now(),
+      };
+
+      const todoComponent = `
+       <div id='todo-${id}'>
+        <p>${todoText}</p>
+        <button onclick="updateStatus(${id})">mark as complete</button>
+        <button>delete</button>
+        </div>
+     `;
+      todoBody.innerHTML = todoBody.innerHTML + todoComponent;
+      todos.push(todo);
+    });
+  </script>
+</html>
