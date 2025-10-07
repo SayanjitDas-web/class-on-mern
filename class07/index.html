@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecom</title>
+</head>
+<body>
+    <section id="products"></section>
+</body>
+<script>
+//    let  x = 10
+//    console.log(100)
+   //async js 
+   // asysnc-await, promise
+   //promise - [reject, resolve]
+//    console.log("before timeout")
+//    setTimeout(() => {
+//     console.log("I am in set timeout..")
+//    },3000)
+//    console.log("after timeout")
+
+//    function callbackEx(cb,val){
+//       let z = 111
+//       cb(z)
+//       console.log(val)
+//    }
+
+//    callbackEx((value) => {
+//     console.log("inside the callback function",value)
+//    },10)
+
+// fetch('https://dummyjson.com/products')
+// .then(res => res.json())
+// .then((data) => console.log(data));
+
+async function fetchData(){
+    try{
+      const res = await fetch('https://dummyjson.com/products')
+      const data = await res.json()
+      let allProduct = ""
+      data?.products?.forEach(product => {
+      const productCard = `
+      <div>
+        <section class="img-container">
+            <img src="${product?.thumbnail}" alt="product">
+        </section>
+        <h1>${product?.title}</h1>
+      </div>
+      `
+      allProduct += productCard
+      });
+      document.getElementById("products").innerHTML = allProduct
+    }catch(err){
+        console.log(err)
+    }
+}
+
+fetchData()
+</script>
+</html>
