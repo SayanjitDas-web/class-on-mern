@@ -9,10 +9,14 @@ const app = express()
 const homeRouter = require("./routes/home.route")
 const authRouter = require("./routes/user.route")
 const recipeRouter = require("./routes/recipe.route")
+const cookieParser = require("cookie-parser")
 
 connectToDb()
 
-app.use(cors({origin:"*",credentials:true}))
+app.use(cors({origin:"http://localhost:5173",credentials:true}))
+app.use(cookieParser())
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 
 app.use("/api/example",homeRouter) 
 app.use("/api/auth", authRouter)

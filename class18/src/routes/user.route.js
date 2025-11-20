@@ -3,7 +3,7 @@ const userController = require("../controllers/user.controller.js");
 const auth = require("../middlewares/auth.js");
 
 // Register
-router.post("/register", userController.register);
+router.post("/signup", userController.signup);
 
 // Login
 router.post("/login", userController.login);

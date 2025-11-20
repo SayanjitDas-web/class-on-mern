@@ -1,8 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api",
+  withCredentials: true,
+});
 
 const RecipeContext = createContext({
   recipes: [],
-  setRecipes: () => {},
+  favorites: [],
   fetchRecipes: () => {},
   getRecipeById: () => {},
   toggleFavorite: () => {},
@@ -10,40 +16,64 @@ const RecipeContext = createContext({
 
 export const RecipeProvider = ({ children }) => {
   const [recipes, setRecipes] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   const fetchRecipes = async () => {
     try {
-      const res = await fetch("https://dummyjson.com/recipes");
-      const data = await res.json();
-      if (data?.recipes) {
-        const enriched = data.recipes.map((r) => ({
-          ...r,
-          favorite: false, // new field
-        }));
-        setRecipes(enriched);
+      const res = await api.get("/recipe/");
+      if (res.data?.recipes) {
+        setRecipes(res.data.recipes);
       }
     } catch (err) {
       console.error("Failed to fetch recipes:", err);
     }
   };
 
-  const getRecipeById = (id) => {
-    return recipes.find((recipe) => recipe.id === Number(id));
+  const fetchFavorites = async () => {
+    try {
+      const res = await api.get("/recipe/favorites");
+      if (Array.isArray(res.data)) {
+        setFavorites(res.data.map((item) => item._id));
+      }
+    } catch (err) {
+      console.error("Failed to fetch favorites:", err);
+    }
   };
 
-  const toggleFavorite = (id) => {
-    setRecipes((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, favorite: !r.favorite } : r))
-    );
+  const getRecipeById = (id) => {
+    return recipes.find((recipe) => recipe._id === id);
+  };
+
+  const toggleFavorite = async (id) => {
+    try {
+      const isFav = favorites.includes(id);
+
+      if (!isFav) {
+        await api.post(`/recipe/favorite/${id}`);
+      } else {
+        await api.delete(`/recipe/favorite/${id}`);
+      }
+
+      fetchFavorites();
+    } catch (err) {
+      console.error("Failed to toggle favorite:", err);
+    }
   };
 
   useEffect(() => {
     fetchRecipes();
+    fetchFavorites();
   }, []);
 
   return (
     <RecipeContext.Provider
-      value={{ recipes, setRecipes, fetchRecipes, getRecipeById, toggleFavorite }}
+      value={{
+        recipes,
+        favorites,
+        fetchRecipes,
+        getRecipeById,
+        toggleFavorite,
+      }}
     >
       {children}
     </RecipeContext.Provider>

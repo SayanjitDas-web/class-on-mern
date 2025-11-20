@@ -2,19 +2,22 @@ import RecipePreviewCard from "../customComponents/RecipePreviewCard";
 import { useRecipe } from "../context/recipe";
 
 function Home() {
-  const { recipes } = useRecipe()
+  const { recipes, favorites } = useRecipe();
+
   return (
-    <div className="flex flex-wrap items-center">
-      {recipes.length !== 0 ? (
-        recipes.map((recipe, i) => {
+    <div className="flex flex-wrap items-center gap-4">
+      {recipes.length > 0 ? (
+        recipes.map((recipe) => {
+          const isFavorite = favorites.includes(recipe._id);
+
           return (
             <RecipePreviewCard
-              name={recipe.name}
+              key={recipe._id}
+              id={recipe._id}
+              name={recipe.title}
               rating={recipe.rating}
-              imageSrc={recipe.image}
-              id = {recipe.id}
-              favorite = {recipe.favorite}
-              key={i}
+              imageSrc={recipe.image || recipe.thumbnail || "/placeholder.jpg"}
+              favorite={isFavorite}
             />
           );
         })

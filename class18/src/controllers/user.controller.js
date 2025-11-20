@@ -1,6 +1,6 @@
 require("dotenv").config()
 
-const {User} = require("../models/User.model")
+const User = require("../models/User.model")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -21,10 +21,10 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: "Invalid credentials" });
+    if (!user) return res.status(400).json({ error: "Invalid email" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+    if (!isMatch) return res.status(400).json({ error: "Invalid password" });
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie('token', token, {
@@ -33,7 +33,7 @@ exports.login = async (req, res) => {
       expires: new Date(
         Date.now() + 30 * 24 * 60 * 60 * 1000
       )
-  });
+    });
     res.json({ success: true,token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -54,7 +54,7 @@ exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ error: "User not found" });
-    res.json({ _id: user._id, username: user.username, email: user.email, spaces: user.spaces });
+    res.json({ _id: user._id, username: user.username, email: user.email });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -19,8 +19,15 @@ const recipeSchema = new mongoose.Schema(
     steps: {
       type: String,
     },
+    image: {
+      type: String,
+    },
     prepTime: {
       type: Number, // in minutes
+      default: 0,
+    },
+    rating: {
+      type: Number,
       default: 0,
     },
     cookTime: {
